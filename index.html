@@ -482,10 +482,10 @@ async function run(){
     const full=(compileOut+runOut).trim();
     const code=data.run? data.run.code:0;
     if(data.compile && data.compile.code!==0){
-      output.innerHTML=`<span class="err">Compilation failed (exit ${data.compile.code})</span>\n`+escapeHtml(compileOut);
+      output.innerHTML=`<span class="err">${escapeHtml(compileOut.trim()||'Compilation failed')}</span>\n<span class="dim">exit ${data.compile.code}</span>`;
       statusEl.textContent='Compile error'; statusEl.className='status err'; exitCode.textContent='exit '+data.compile.code; exitCode.className='status err';
     } else if(code!==0){
-      output.innerHTML=`<span class="err">Runtime error (exit ${code})</span>\n`+escapeHtml(full||'(no output)');
+      output.innerHTML=`<span class="err">${escapeHtml(full.trim()||'Runtime error')}</span>\n<span class="dim">exit ${code}</span>`;
       statusEl.textContent='Runtime error'; statusEl.className='status err'; exitCode.textContent='exit '+code;
     } else {
       output.innerHTML=`<span class="ok">✓ Executed in ${elapsed}s</span>\n`+escapeHtml(full||'(no output)');
