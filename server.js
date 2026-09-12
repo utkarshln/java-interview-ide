@@ -5,7 +5,7 @@ import os from 'os';
 import { exec, spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 
-const PORT = 5173;
+const PORT = process.env.PORT || 5173;
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 
 function getJavaVersion(){

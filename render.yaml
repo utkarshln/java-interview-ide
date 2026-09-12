@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: java-interview-ide
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/java-version
+    envVars:
+      - key: NODE_VERSION
+        value: 20
