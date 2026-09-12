@@ -65,6 +65,8 @@
   .io:last-child{border-bottom:none}
   .io-output{flex:1; min-height:80px}
   .io-stdin{height:110px; flex-shrink:0; flex-grow:0}
+  .io-stdin.hidden{display:none}
+  .drag-handle.inner.hidden{display:none}
   .io-head{font-size:10px; font-weight:700; letter-spacing:0.7px; text-transform:uppercase; color:var(--muted); padding:7px 8px; border-bottom:1px solid var(--border); background:var(--panel-2); display:flex; justify-content:space-between; align-items:center}
   .io textarea{flex:1; width:100%; background: var(--bg); color:var(--text); border:none; padding:8px; font-family:var(--mono); font-size:12px; resize:none; outline:none}
   .output{flex:1; background: var(--bg); color:var(--text); font-family:var(--mono); font-size:12px; padding:8px; overflow:auto; white-space:pre-wrap; line-height:1.6}
@@ -147,6 +149,7 @@
         <div class="ctab active" data-ctab="output">Output</div>
         <div class="ctab" data-ctab="tests">Tests <span id="testCount" style="opacity:0.6; font-weight:500"></span></div>
         <button class="btn" id="runTestsBtn" style="height:24px; font-size:11px; margin-left:8px; display:none">▶ Run Tests</button>
+        <button class="btn" id="stdinToggle" style="height:24px; font-size:11px; margin-left:8px; border-style:dashed">STDIN ▸</button>
       </div>
       <div class="console-actions">
         <span class="status" id="runMeta"></span>
@@ -158,9 +161,9 @@
         <div class="io-head">OUTPUT <span class="status" id="exitCode"></span></div>
         <div class="output" id="output"><span class="dim">▶ Click Run or press ⌘+Enter. Detecting JDK…</span></div>
       </div>
-      <div class="drag-handle inner" id="innerDragHandle" title="Drag to resize STDIN"></div>
-      <div class="io io-stdin" id="stdinPane">
-        <div class="io-head">STDIN <span style="font-weight:500; text-transform:none; letter-spacing:0">Scanner / BufferedReader — bottom</span></div>
+      <div class="drag-handle inner hidden" id="innerDragHandle" title="Drag to resize STDIN"></div>
+      <div class="io io-stdin hidden" id="stdinPane">
+        <div class="io-head">STDIN <span style="font-weight:500; text-transform:none; letter-spacing:0">Scanner / BufferedReader</span> <span style="margin-left:auto; font-size:10px; cursor:pointer" id="closeStdin">✕</span></div>
         <textarea id="stdin" placeholder="2 7 11 15&#10;9"></textarea>
       </div>
       <div class="tests-wrap" id="testsWrap"></div>
@@ -481,6 +484,22 @@ document.getElementById('exportBtn').onclick=()=>{
     stdinPane.style.height=newH+'px';
   });
   window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.cursor=''; });
+})();
+// STDIN toggle (optional, hidden by default)
+(() => {
+  const btn=document.getElementById('stdinToggle'), pane=document.getElementById('stdinPane'), handle=document.getElementById('innerDragHandle'), close=document.getElementById('closeStdin');
+  const key='utkarsh-ide-stdin-visible';
+  let visible = localStorage.getItem(key)==='1';
+  function apply(){
+    pane.classList.toggle('hidden', !visible);
+    handle.classList.toggle('hidden', !visible);
+    btn.textContent = visible ? 'STDIN ▾' : 'STDIN ▸';
+    btn.style.borderStyle = visible ? 'solid' : 'dashed';
+    localStorage.setItem(key, visible?'1':'0');
+  }
+  apply();
+  btn.onclick=()=>{ visible=!visible; apply(); };
+  if(close) close.onclick=()=>{ visible=false; apply(); };
 })();
 
 // Palette
