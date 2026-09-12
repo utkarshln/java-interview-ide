@@ -82,7 +82,13 @@ const server = http.createServer(async (req, res)=>{
         for(const f of files){
           const safe = path.basename(f.name);
           if(!safe.endsWith('.java')) continue;
-          const fixed = ensureImports(f.content);
+          let fixed = ensureImports(f.content);
+          // fix: public class name must match filename — auto-strip public if mismatch
+          const base = path.basename(safe, '.java');
+          fixed = fixed.replace(/public\s+class\s+(\w+)/g, (m, cls)=>{
+            if(cls !== base) return `class ${cls}`;
+            return m;
+          });
           fs.writeFileSync(path.join(tmp, safe), fixed);
         }
         const fileList = fs.readdirSync(tmp).filter(f=>f.endsWith('.java'));
@@ -111,16 +117,20 @@ const server = http.createServer(async (req, res)=>{
           return res.end(JSON.stringify({ compile, run: null }));
         }
 
-        // find main class: prefer Main, else first file basename without .java that contains "public static void main"
+        // find main class: detect class containing main (public or not)
         let mainClass = 'Main';
-        // if no Main.java, try to detect
-        if(!fileList.includes('Main.java')){
-          for(const f of fileList){
-            const content = fs.readFileSync(path.join(tmp,f),'utf8');
-            const m = content.match(/public\s+class\s+(\w+)/);
-            if(m && content.includes('public static void main')){ mainClass = m[1]; break; }
-            if(m) mainClass = m[1];
+        // search all files for main method
+        for(const f of fileList){
+          const content = fs.readFileSync(path.join(tmp,f),'utf8');
+          if(content.includes('public static void main')){
+            const m = content.match(/(?:public\s+)?class\s+(\w+)/);
+            if(m){ mainClass = m[1]; break; }
           }
+        }
+        // fallback: if no main found but fileList has single file, use its class name
+        if(mainClass==='Main' && !fileList.includes('Main.java') && fileList.length===1){
+          const c=fs.readFileSync(path.join(tmp,fileList[0]),'utf8').match(/(?:public\s+)?class\s+(\w+)/);
+          if(c) mainClass=c[1];
         }
 
         const run = await new Promise(resolve=>{
