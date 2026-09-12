@@ -40,14 +40,20 @@
   .btn-icon{width:30px; padding:0; justify-content:center}
   .timer{font-family:var(--mono); font-size:12px; color:var(--muted); background:var(--panel-2); border:1px solid var(--border); padding:5px 8px; border-radius:8px; display:flex; align-items:center; gap:6px}
   .timer b{color:var(--text)}
-  .work{flex:1; display:flex; flex-direction:column; overflow:hidden}
-  .editor-wrap{flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:120px}
+  .work{flex:1; display:flex; flex-direction:row; overflow:hidden}
+  .editor-wrap{flex:1; display:flex; flex-direction:column; overflow:hidden; min-width:340px; min-height:0}
   .editor-head{height:32px; display:flex; align-items:center; justify-content:space-between; padding:0 10px; background:var(--panel); border-bottom:1px solid var(--border); flex-shrink:0}
   .editor{flex:1; min-height:0}
-  .drag-handle{height:6px; background:var(--panel-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); cursor:row-resize; display:flex; align-items:center; justify-content:center; flex-shrink:0}
-  .drag-handle::before{content:""; width:28px; height:3px; border-radius:999px; background:var(--border)}
+  .drag-handle{width:6px; background:var(--panel-2); border-left:1px solid var(--border); border-right:1px solid var(--border); cursor:col-resize; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+  .drag-handle::before{content:""; width:3px; height:28px; border-radius:999px; background:var(--border)}
   .drag-handle:hover{background: var(--border)}
-  .console{height:260px; background:var(--panel); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0}
+  .console{width:520px; min-width:320px; max-width:65%; background:var(--panel); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0; border-left:1px solid var(--border)}
+  @media(max-width:900px){
+    .work{flex-direction:column}
+    .drag-handle{width:auto; height:6px; cursor:row-resize; border-left:none; border-right:none; border-top:1px solid var(--border); border-bottom:1px solid var(--border)}
+    .drag-handle::before{width:28px; height:3px}
+    .console{width:auto; min-width:0; max-width:none; height:300px; border-left:none; border-top:1px solid var(--border)}
+  }
   .console-tabs{display:flex; align-items:center; justify-content:space-between; padding:0 10px; height:36px; border-bottom:1px solid var(--border); background: var(--panel); flex-shrink:0}
   .console-tabs .tabs{display:flex; gap:4px; align-items:center}
   .ctab{padding:5px 10px; border-radius:999px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; border:1px solid transparent}
@@ -95,7 +101,8 @@
   .pal-item{padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:13px; border-bottom:1px solid var(--border)}
   .pal-item:hover, .pal-item.active{background:var(--panel-2)}
   .pal-item kbd{font-family:var(--mono); font-size:11px; background:var(--bg); border:1px solid var(--border); padding:2px 6px; border-radius:6px; color:var(--muted)}
-  .drag-handle.inner{height:6px; background:var(--panel-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border)}
+  .drag-handle.inner{height:6px; width:auto; background:var(--panel-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); cursor:row-resize}
+  .drag-handle.inner::before{width:28px; height:3px}
   .light .output, .light .io textarea{ background:#ffffff }
 </style>
 </head>
@@ -439,17 +446,26 @@ document.getElementById('exportBtn').onclick=()=>{
   const blob=new Blob([md], {type:'text/markdown'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='java-ide-export.md'; a.click();
 };
 
-// Drag resize: code vs output panel
+// Drag resize: code (left) vs output (right) — notebook style
 (() => {
   const handle=document.getElementById('dragHandle'), consoleEl=document.getElementById('console');
   let dragging=false;
-  handle.addEventListener('mousedown', e=>{ dragging=true; document.body.style.cursor='row-resize'; e.preventDefault(); });
+  const isMobile=()=> window.matchMedia('(max-width:900px)').matches;
+  handle.addEventListener('mousedown', e=>{ dragging=true; document.body.style.cursor=isMobile()?'row-resize':'col-resize'; e.preventDefault(); });
   window.addEventListener('mousemove', e=>{
     if(!dragging) return;
     const rect=document.getElementById('work').getBoundingClientRect();
-    const newH = rect.bottom - e.clientY;
-    const clamped=Math.max(140, Math.min(500, newH));
-    consoleEl.style.height=clamped+'px';
+    if(isMobile()){
+      const newH = rect.bottom - e.clientY;
+      const clamped=Math.max(140, Math.min(500, newH));
+      consoleEl.style.height=clamped+'px';
+      consoleEl.style.width='';
+    } else {
+      const newW = rect.right - e.clientX;
+      const clamped=Math.max(320, Math.min(Math.min(720, rect.width*0.62), newW));
+      consoleEl.style.width=clamped+'px';
+      consoleEl.style.height='';
+    }
   });
   window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.cursor=''; });
 })();
