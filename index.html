@@ -147,8 +147,6 @@
     <div class="console-tabs">
       <div class="tabs">
         <div class="ctab active" data-ctab="output">Output</div>
-        <div class="ctab" data-ctab="tests">Tests <span id="testCount" style="opacity:0.6; font-weight:500"></span></div>
-        <button class="btn" id="runTestsBtn" style="height:24px; font-size:11px; margin-left:8px; display:none">▶ Run Tests</button>
         <button class="btn" id="stdinToggle" style="height:24px; font-size:11px; margin-left:8px; border-style:dashed">STDIN ▸</button>
       </div>
       <div class="console-actions">
@@ -269,11 +267,11 @@ document.getElementById('fontDown').onclick=()=>{fontSize=Math.max(10, fontSize-
 function renderTabs(){ /* removed */ }
 function switchFile(name){ state.active=name; if(editor) editor.setValue(state.files[name]||''); }
 
-// Tests UI
+// Tests UI (hidden — Run button is enough)
 function renderTests(){
-  const w=document.getElementById('testsWrap'); w.innerHTML='';
-  document.getElementById('testCount').textContent = `(${state.tests.length})`;
-  document.getElementById('runTestsBtn').style.display = state.tests.length? 'inline-flex':'none';
+  const w=document.getElementById('testsWrap'); if(!w) return; w.innerHTML='';
+  const tc=document.getElementById('testCount'); if(tc) tc.textContent = `(${state.tests.length})`;
+  const rt=document.getElementById('runTestsBtn'); if(rt) rt.style.display = state.tests.length? 'inline-flex':'none';
   // summary banner
   const allDone = state.tests.length>0 && state.tests.every(t=> t.status==='pass' || t.status==='fail');
   const allPass = state.tests.length>0 && state.tests.every(t=> t.status==='pass');
