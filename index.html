@@ -346,12 +346,21 @@ function renderTests(){
 // auto-detect java (banner removed, version kept internally)
 async function detectJava(){
   const out=document.getElementById('output');
+  const RENDER_API='https://java-interview-ide.onrender.com';
   try{
     const r=await fetch('/api/java-version'); if(r.ok){ const j=await r.json(); javaVersion=j.version;
       out.innerHTML=`<span class="dim">▶ Ready — Run or Run Tests.</span>`;
       document.getElementById('status').textContent='Ready'; return;
     }
   }catch(e){}
+  if(location.hostname.includes('github.io')){
+    try{
+      const r=await fetch(RENDER_API+'/api/java-version'); if(r.ok){ const j=await r.json(); javaVersion=j.version;
+        out.innerHTML=`<span class="dim">▶ Ready — Run or Run Tests. (via Render)</span>`;
+        document.getElementById('status').textContent='Ready'; return;
+      }
+    }catch(e){}
+  }
   try{ const r=await fetch('https://emkc.org/api/v2/piston/runtimes'); if(r.ok){ const js=await r.json(); const j=js.find(x=>x.language==='java'); if(j){ javaVersion=j.version; return; } } }catch(e){}
   javaVersion='25.0.1';
 }
@@ -569,8 +578,24 @@ async function run(){
   try{
     const files=Object.entries(state.files).map(([name,content])=>({name,content}));
     const body={ language:'java', version:javaVersion, files, stdin: document.getElementById('stdin').value, run_timeout:5000 };
+    const RENDER_API='https://java-interview-ide.onrender.com';
     let res=null;
-    try{ res=await fetch('/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}); if(!res.ok) throw new Error('local '+res.status); }catch(err){ res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}); }
+    try{
+      res=await fetch('/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      if(!res.ok) throw new Error('local '+res.status);
+    }catch(e){
+      // GitHub Pages → try Render (free tier may cold-start ~10s)
+      if(location.hostname.includes('github.io')){
+        try{
+          res=await fetch(RENDER_API+'/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+          if(!res.ok) throw new Error('render '+res.status);
+        }catch(e2){
+          res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+        }
+      } else {
+        res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      }
+    }
     if(!res.ok) throw new Error('Compile service '+res.status);
     const data=await res.json();
     const elapsed=((performance.now()-start)/1000).toFixed(2);
@@ -600,8 +625,24 @@ async function runOneTest(t){
   const files=Object.entries(state.files).map(([name,content])=>({name,content}));
   const body={ language:'java', version:javaVersion, files, stdin: t.stdin||'', run_timeout:5000 };
   try{
-    let res=await fetch('/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
-    if(!res.ok) res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const RENDER_API='https://java-interview-ide.onrender.com';
+    let res=null;
+    try{
+      res=await fetch('/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      if(!res.ok) throw new Error('local');
+    }catch(e){
+      if(location.hostname.includes('github.io')){
+        try{
+          res=await fetch(RENDER_API+'/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+          if(!res.ok) throw new Error('render');
+        }catch(e2){
+          res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+        }
+      } else {
+        res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+      }
+    }
+    if(!res.ok) throw new Error('Compile service '+res.status);
     const data=await res.json();
     const out = ((data.compile && data.compile.code!==0 ? data.compile.output : '') + (data.run? data.run.output:'')) .trim();
     // if single file override for test, handle t.content
