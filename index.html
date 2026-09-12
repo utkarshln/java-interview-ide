@@ -586,7 +586,7 @@ async function runAllTests(){
   document.querySelector('[data-ctab="tests"]').click();
   for(const t of state.tests) await runOneTest(t);
 }
-document.getElementById('runTestsBtn').onclick=runAllTests;
+const rtBtn=document.getElementById('runTestsBtn'); if(rtBtn) rtBtn.onclick=runAllTests;
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 document.getElementById('runBtn').onclick=run;
 window.addEventListener('keydown', e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){ e.preventDefault(); run(); }});
