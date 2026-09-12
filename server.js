@@ -157,6 +157,11 @@ const server = http.createServer(async (req, res)=>{
   if(fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) filePath = path.join(filePath,'index.html');
   if(!fs.existsSync(filePath)){ res.writeHead(404); return res.end('not found'); }
   const ext = path.extname(filePath);
+  // prevent Browser JS cache (before d6acedf fix) — always fetch fresh
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
   res.writeHead(200, {'Content-Type': mime[ext] || 'text/plain'});
   fs.createReadStream(filePath).pipe(res);
 });
