@@ -87,6 +87,15 @@ const server = http.createServer(async (req, res)=>{
         }
         const fileList = fs.readdirSync(tmp).filter(f=>f.endsWith('.java'));
         if(!fileList.length){ res.writeHead(400); return res.end(JSON.stringify({ message:'no java files'})); }
+        // if Main references Solution but Solution.java missing, auto-create default Solution
+        const mainPath = path.join(tmp, 'Main.java');
+        if(fs.existsSync(mainPath) && !fileList.includes('Solution.java')){
+          const mainContent = fs.readFileSync(mainPath,'utf8');
+          if(mainContent.includes('Solution')){
+            fs.writeFileSync(path.join(tmp,'Solution.java'), `import java.util.*;\nclass Solution{public static int[] twoSum(int[]n,int t){java.util.Map<Integer,Integer> m=new java.util.HashMap<>();for(int i=0;i<n.length;i++){int k=t-n[i]; if(m.containsKey(k)) return new int[]{m.get(k),i}; m.put(n[i],i);}return new int[]{};}}\n`);
+            fileList.push('Solution.java');
+          }
+        }
 
         // compile
         const compile = await new Promise(resolve=>{

@@ -193,6 +193,9 @@ let state = JSON.parse(localStorage.getItem(LS_KEY)||'null') || {
 };
 if(!state.tests) state.tests = DEFAULT_TESTS;
 if(!state.fontSize) state.fontSize=13;
+// ensure Solution exists (reverted tabs hid it but compile still needs it)
+if(!state.files['Main.java']) state.files['Main.java']=DEFAULT_MAIN;
+if(!state.files['Solution.java']) state.files['Solution.java']=DEFAULT_SOLUTION;
 
 let editor, monacoInstance, javaVersion=null;
 
