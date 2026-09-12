@@ -72,9 +72,13 @@
   .test-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
   .test-head strong{font-size:12px; display:flex; align-items:center; gap:6px}
   .badge{font-size:10px; padding:2px 7px; border-radius:999px; border:1px solid var(--border); font-family:var(--mono)}
-  .badge.pass{background:rgba(251,113,133,0.12); border-color:rgba(251,113,133,0.3); color:var(--accent)}
+  .badge.pass{background:rgba(74,222,128,0.15); border-color:rgba(74,222,128,0.4); color:#4ade80}
   .badge.fail{background:rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.3); color:var(--danger)}
   .badge.idle{background:var(--panel-2); color:var(--muted)}
+  .test-summary{padding:10px 12px; border-radius:10px; font-size:13px; font-weight:600; text-align:center; border:1px solid transparent; display:none}
+  .test-summary.show{display:block}
+  .test-summary.pass{background:rgba(74,222,128,0.15); border-color:rgba(74,222,128,0.4); color:#4ade80}
+  .test-summary.fail{background:rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.3); color:#f87171}
   .test-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px}
   .test-grid label{font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--muted); display:flex; flex-direction:column; gap:4px}
   .test-grid textarea, .test-grid input{font-family:var(--mono); font-size:11px; padding:6px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text); outline:none}
@@ -255,6 +259,15 @@ function renderTests(){
   const w=document.getElementById('testsWrap'); w.innerHTML='';
   document.getElementById('testCount').textContent = `(${state.tests.length})`;
   document.getElementById('runTestsBtn').style.display = state.tests.length? 'inline-flex':'none';
+  // summary banner
+  const allDone = state.tests.length>0 && state.tests.every(t=> t.status==='pass' || t.status==='fail');
+  const allPass = state.tests.length>0 && state.tests.every(t=> t.status==='pass');
+  if(allDone){
+    const sum=document.createElement('div');
+    sum.className='test-summary show '+(allPass?'pass':'fail');
+    sum.textContent= allPass ? '✓ All test cases passed!' : '✗ Some test cases failed';
+    w.appendChild(sum);
+  }
   state.tests.forEach((t, idx)=>{
     const card=document.createElement('div'); card.className='test-card';
     card.innerHTML=`
