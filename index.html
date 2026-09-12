@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Java Interview IDE — by Utkarsh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f0a12; --panel:#1a1219; --panel-2:#24141f; --border:#2e1a2b;
+    --muted:#9d8a96; --text:#f1e6ee; --accent:#fb7185; --accent2:#f472b6; --danger:#f87171;
+    --mono:'JetBrains Mono', ui-monospace, SFMono, Menlo, monospace;
+    --sans:'Inter', system-ui, sans-serif;
+  }
+  :root.light{
+    --bg:#fff1f2; --panel:#ffffff; --panel-2:#ffe4e6; --border:#fecdd3;
+    --muted:#9f1239; --text:#1c1917; --accent:#e11d48; --accent2:#be123c; --danger:#e11d48;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%; overflow:hidden}
+  body{font-family:var(--sans); background:var(--bg); color:var(--text); display:flex; flex-direction:column; transition: background .2s, color .2s}
+  header{
+    height:52px; display:flex; align-items:center; justify-content:space-between;
+    padding:0 12px; background: var(--panel); border-bottom:1px solid var(--border); gap:8px; flex-shrink:0;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-weight:600; white-space:nowrap}
+  .logo{width:28px;height:28px; border-radius:8px; background:linear-gradient(135deg,#ec4899,#fb7185); display:grid; place-items:center; font-family:var(--mono); font-size:14px; color:white; box-shadow:0 2px 10px rgba(251,113,133,0.35)}
+  .brand span{font-size:14px}
+  .brand small{font-weight:500; color:var(--muted); font-size:11px; margin-left:6px; border-left:1px solid var(--border); padding-left:8px; font-family:var(--mono)}
+  .head-actions{display:flex; align-items:center; gap:6px; flex-wrap:wrap; justify-content:flex-end}
+  .btn{height:30px; border-radius:8px; border:1px solid var(--border); background:var(--panel-2); color:var(--text); font-size:12.5px; padding:0 10px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-family:var(--sans); font-weight:500; white-space:nowrap}
+  .btn:hover{border-color:var(--accent); opacity:0.95}
+  .btn-run{background:linear-gradient(135deg,#e11d48,#fb7185); border-color:transparent; color:white; font-weight:600; padding:0 14px; box-shadow:0 4px 14px rgba(225,29,72,0.32)}
+  .btn-run:disabled{opacity:0.6; cursor:not-allowed}
+  .btn-icon{width:30px; padding:0; justify-content:center}
+  .timer{font-family:var(--mono); font-size:12px; color:var(--muted); background:var(--panel-2); border:1px solid var(--border); padding:5px 8px; border-radius:8px; display:flex; align-items:center; gap:6px}
+  .timer b{color:var(--text)}
+  .work{flex:1; display:flex; flex-direction:column; overflow:hidden}
+  .editor-wrap{flex:1; display:flex; flex-direction:column; overflow:hidden; min-height:120px}
+  .editor-head{height:32px; display:flex; align-items:center; justify-content:space-between; padding:0 10px; background:var(--panel); border-bottom:1px solid var(--border); flex-shrink:0}
+  .editor{flex:1; min-height:0}
+  .drag-handle{height:6px; background:var(--panel-2); border-top:1px solid var(--border); border-bottom:1px solid var(--border); cursor:row-resize; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+  .drag-handle::before{content:""; width:28px; height:3px; border-radius:999px; background:var(--border)}
+  .drag-handle:hover{background: var(--border)}
+  .console{height:260px; background:var(--panel); display:flex; flex-direction:column; overflow:hidden; flex-shrink:0}
+  .console-tabs{display:flex; align-items:center; justify-content:space-between; padding:0 10px; height:36px; border-bottom:1px solid var(--border); background: var(--panel); flex-shrink:0}
+  .console-tabs .tabs{display:flex; gap:4px; align-items:center}
+  .ctab{padding:5px 10px; border-radius:999px; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; border:1px solid transparent}
+  .ctab.active{background:var(--panel-2); border-color:var(--border); color:var(--text)}
+  .console-actions{display:flex; gap:6px; align-items:center}
+  .icon-btn{width:26px;height:26px; border-radius:6px; border:1px solid var(--border); background:var(--panel-2); display:grid; place-items:center; cursor:pointer; color:var(--muted); font-size:12px}
+  .console-body{display:flex; flex:1; overflow:hidden}
+  .io{flex:1; display:flex; flex-direction:column; border-right:1px solid var(--border); overflow:hidden}
+  .io:last-child{border-right:none}
+  .io-head{font-size:10px; font-weight:700; letter-spacing:0.7px; text-transform:uppercase; color:var(--muted); padding:7px 8px; border-bottom:1px solid var(--border); background:var(--panel-2); display:flex; justify-content:space-between; align-items:center}
+  .io textarea{flex:1; width:100%; background: var(--bg); color:var(--text); border:none; padding:8px; font-family:var(--mono); font-size:12px; resize:none; outline:none}
+  .output{flex:1; background: var(--bg); color:var(--text); font-family:var(--mono); font-size:12px; padding:8px; overflow:auto; white-space:pre-wrap; line-height:1.6}
+  .output .ok{color:var(--accent)} .output .err{color:var(--danger)} .output .dim{color:var(--muted)}
+  .status{font-size:11px; color:var(--muted); font-family:var(--mono)}
+  .status.ok{color:var(--accent)} .status.err{color:var(--danger)}
+  /* tests */
+  .tests-wrap{flex:1; overflow:auto; padding:8px; display:none; flex-direction:column; gap:8px; background: var(--bg)}
+  .tests-wrap.active{display:flex}
+  .console-body.tests-mode .io{ display:none }
+  .console-body.tests-mode .tests-wrap{ display:flex }
+  .test-card{background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:6px}
+  .test-head{display:flex; align-items:center; gap:8px; justify-content:space-between}
+  .test-head strong{font-size:12px; display:flex; align-items:center; gap:6px}
+  .badge{font-size:10px; padding:2px 7px; border-radius:999px; border:1px solid var(--border); font-family:var(--mono)}
+  .badge.pass{background:rgba(251,113,133,0.12); border-color:rgba(251,113,133,0.3); color:var(--accent)}
+  .badge.fail{background:rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.3); color:var(--danger)}
+  .badge.idle{background:var(--panel-2); color:var(--muted)}
+  .test-grid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px}
+  .test-grid label{font-size:10px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color:var(--muted); display:flex; flex-direction:column; gap:4px}
+  .test-grid textarea, .test-grid input{font-family:var(--mono); font-size:11px; padding:6px; border-radius:7px; border:1px solid var(--border); background:var(--bg); color:var(--text); outline:none}
+  .test-actions{display:flex; gap:6px}
+  /* command palette */
+  .palette{position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:flex-start; justify-content:center; padding-top:12vh; z-index:50}
+  .palette.open{display:flex}
+  .palette-box{width:min(560px, 92vw); background:var(--panel); border:1px solid var(--border); border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.4)}
+  .palette-box input{width:100%; padding:14px; font-size:14px; border:none; border-bottom:1px solid var(--border); background:var(--panel); color:var(--text); outline:none; font-family:var(--sans)}
+  .pal-list{max-height:300px; overflow:auto}
+  .pal-item{padding:10px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; font-size:13px; border-bottom:1px solid var(--border)}
+  .pal-item:hover, .pal-item.active{background:var(--panel-2)}
+  .pal-item kbd{font-family:var(--mono); font-size:11px; background:var(--bg); border:1px solid var(--border); padding:2px 6px; border-radius:6px; color:var(--muted)}
+  .light .output, .light .io textarea{ background:#ffffff }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo">J</div>
+    <span>Java Interview IDE</span>
+  </div>
+  <div class="head-actions">
+    <div class="timer" id="timer">⏱ <b>00:00</b> <span style="margin-left:4px; font-size:11px; cursor:pointer; color:var(--accent)" id="timerToggle">▶ start</span></div>
+    <button class="btn btn-icon" id="themeBtn" title="Toggle light/dark">◐</button>
+    <button class="btn btn-icon" id="fontDown" title="Font -">A-</button>
+    <button class="btn btn-icon" id="fontUp" title="Font +">A+</button>
+    <button class="btn" id="formatBtn" title="Format (Shift+Alt+F)">≣ Format</button>
+    <button class="btn" id="shareBtn" title="Copy share link">⧉ Share</button>
+    <button class="btn" id="exportBtn" title="Export md">⬇ Export</button>
+    <button class="btn" id="resetBtn">↺ Reset</button>
+    <button class="btn" id="copyBtn">⧉ Copy</button>
+    <button class="btn btn-run" id="runBtn">▶ Run (⌘↩)</button>
+    <button class="btn btn-icon" id="paletteBtn" title="Command palette (⌘K)">⌘K</button>
+  </div>
+</header>
+
+<div class="work" id="work">
+  <div class="editor-wrap" id="editorWrap">
+    <div class="editor-head">
+      <div style="display:flex; gap:6px; align-items:center">
+        <span style="font-family:var(--mono); font-size:12px; background:var(--panel-2); border:1px solid var(--border); padding:3px 8px; border-radius:999px">Main.java</span>
+        <span class="status" id="status">Ready</span>
+      </div>
+      <div style="font-size:10px; color:var(--muted)">⌘K palette • draggable console</div>
+    </div>
+    <div id="editor" class="editor"></div>
+  </div>
+
+  <div class="drag-handle" id="dragHandle" title="Drag to resize"></div>
+
+  <section class="console" id="console">
+    <div class="console-tabs">
+      <div class="tabs">
+        <div class="ctab active" data-ctab="output">Output</div>
+        <div class="ctab" data-ctab="tests">Tests <span id="testCount" style="opacity:0.6; font-weight:500"></span></div>
+        <button class="btn" id="runTestsBtn" style="height:24px; font-size:11px; margin-left:8px; display:none">▶ Run Tests</button>
+      </div>
+      <div class="console-actions">
+        <span class="status" id="runMeta"></span>
+        <button class="icon-btn" id="clearBtn" title="Clear">⌫</button>
+      </div>
+    </div>
+    <div class="console-body" id="consoleBody">
+      <div class="io">
+        <div class="io-head">STDIN <span style="font-weight:500; text-transform:none; letter-spacing:0">Scanner / BufferedReader</span></div>
+        <textarea id="stdin" placeholder="2 7 11 15&#10;9"></textarea>
+      </div>
+      <div class="io" style="flex:1.25">
+        <div class="io-head">OUTPUT <span class="status" id="exitCode"></span></div>
+        <div class="output" id="output"><span class="dim">▶ Click Run or press ⌘+Enter. Detecting JDK…</span></div>
+      </div>
+      <div class="tests-wrap" id="testsWrap"></div>
+    </div>
+  </section>
+</div>
+
+<div class="palette" id="palette">
+  <div class="palette-box">
+    <input id="palInput" placeholder="Type command… (e.g. run, format, new file)" autocomplete="off"/>
+    <div class="pal-list" id="palList"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script>
+const DEFAULT_MAIN = `import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        int[] nums = {2, 7, 11, 15};
+        int target = 9;
+        int[] ans = Solution.twoSum(nums, target);
+        System.out.println(Arrays.toString(ans));
+    }
+}
+`;
+const DEFAULT_SOLUTION = `import java.util.*;
+
+class Solution {
+    public static int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int need = target - nums[i];
+            if (map.containsKey(need)) return new int[]{ map.get(need), i };
+            map.put(nums[i], i);
+        }
+        return new int[]{};
+    }
+}
+`;
+const LS_KEY='utkarsh-java-ide-v2';
+const DEFAULT_TESTS=[
+  { id:'t1', name:'Sample', stdin:'', expected:'[0, 1]' },
+  { id:'t2', name:'Stdin sum', stdin:'2 7\n', expected:'9', file:'Main.java', content:'import java.util.*; public class Main{public static void main(String[]a){Scanner sc=new Scanner(System.in); System.out.println(sc.nextInt()+sc.nextInt());}}' }
+];
+let state = JSON.parse(localStorage.getItem(LS_KEY)||'null') || {
+  files: { 'Main.java': DEFAULT_MAIN, 'Solution.java': DEFAULT_SOLUTION },
+  active:'Main.java', stdin:'', tests: DEFAULT_TESTS, fontSize:13, theme:'dark'
+};
+if(!state.tests) state.tests = DEFAULT_TESTS;
+if(!state.fontSize) state.fontSize=13;
+
+let editor, monacoInstance, javaVersion=null;
+
+// global problem detector (any question, not just Two Sum)
+function isProblemPaste(text){
+  if(!text || text.trim().length<20) return false;
+  if(text.trim().startsWith('//')) return false; // already commented
+  const lower=text.toLowerCase();
+  const problemWords=["example","input:","output:","constraints","explanation","given","you may assume","you are given","topics","hint","companies","premium lock","return indices","substring","duplicate characters","length of the longest"];
+  const hasProblem=problemWords.some(w=> lower.includes(w));
+  const hasCode=/(\bclass\b\s+\w+|\bimport\s+java\b|System\.out|^\s*public\s+static\b.*main)/m.test(text);
+  const lines=text.split('\n').filter(l=>l.trim().length>0);
+  if(lines.length>=3 && hasProblem && !hasCode) return true;
+  if(lines.length>10 && !hasCode) return true;
+  const codeSymbols = (text.match(/[;{}]/g)||[]).length;
+  if(hasProblem && codeSymbols < 3 && lines.length>2) return true;
+  if(/^\s*\d+\.\s+.+/.test(text) && hasProblem) return true;
+  return false;
+}
+function toCommented(text){ return text.split('\n').map(l=> l.trim()==="" ? "//" : "// "+l).join('\n'); }
+
+// apply theme/font on load
+if(state.theme==='light') document.documentElement.classList.add('light');
+let fontSize = state.fontSize;
+let isAutoCommenting=false;
+
+// Timer
+let tInt=null, secs=0;
+document.getElementById('timerToggle').onclick=()=>{
+  const b=document.querySelector('#timer b'), tog=document.getElementById('timerToggle');
+  if(tInt){clearInterval(tInt);tInt=null;tog.textContent='▶ start';}
+  else{tInt=setInterval(()=>{secs++; const m=String(Math.floor(secs/60)).padStart(2,'0'), s=String(secs%60).padStart(2,'0'); b.textContent=m+':'+s;},1000); tog.textContent='⏸ pause';}
+};
+
+// Theme toggle
+document.getElementById('themeBtn').onclick=()=>{
+  const isLight=document.documentElement.classList.toggle('light');
+  state.theme=isLight?'light':'dark'; save();
+  if(editor) editor.updateOptions({ theme: isLight?'vs':'utkarshPinkDark' });
+};
+
+// Font
+function applyFont(){ if(editor) editor.updateOptions({fontSize}); save(); }
+document.getElementById('fontUp').onclick=()=>{fontSize=Math.min(22, fontSize+1); state.fontSize=fontSize; applyFont()};
+document.getElementById('fontDown').onclick=()=>{fontSize=Math.max(10, fontSize-1); state.fontSize=fontSize; applyFont()};
+
+// Single file mode (multi-file tabs reverted)
+function renderTabs(){ /* removed */ }
+function switchFile(name){ state.active=name; if(editor) editor.setValue(state.files[name]||''); }
+
+// Tests UI
+function renderTests(){
+  const w=document.getElementById('testsWrap'); w.innerHTML='';
+  document.getElementById('testCount').textContent = `(${state.tests.length})`;
+  document.getElementById('runTestsBtn').style.display = state.tests.length? 'inline-flex':'none';
+  state.tests.forEach((t, idx)=>{
+    const card=document.createElement('div'); card.className='test-card';
+    card.innerHTML=`
+      <div class="test-head">
+        <strong><span style="color:var(--accent)">#${idx+1}</span> <input value="${escapeHtml(t.name)}" data-k="name" style="font-weight:600; border:1px solid transparent; background:transparent; color:var(--text); font-size:12px; width:120px"/></strong>
+        <span class="badge ${t.status||'idle'}" data-badge>${t.status==='pass'?'✓ pass': t.status==='fail'?'✗ fail':'idle'}</span>
+        <div class="test-actions">
+          <button class="btn" data-run="${t.id}" style="height:24px; font-size:11px">Run</button>
+          <button class="btn btn-icon" data-del="${t.id}" style="height:24px; width:24px">×</button>
+        </div>
+      </div>
+      <div class="test-grid">
+        <label>STDIN<textarea data-k="stdin" rows="2" placeholder="input...">${escapeHtml(t.stdin||'')}</textarea></label>
+        <label>Expected<textarea data-k="expected" rows="2" placeholder="[0, 1]">${escapeHtml(t.expected||'')}</textarea></label>
+        <label>Actual <textarea readonly rows="2" style="opacity:0.8">${escapeHtml(t.actual||'')}</textarea></label>
+      </div>
+    `;
+    // bind edits
+    card.querySelectorAll('[data-k]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        t[inp.dataset.k]=inp.value; save();
+      });
+    });
+    card.querySelector('[data-run]').onclick=()=> runOneTest(t);
+    card.querySelector('[data-del]').onclick=()=>{ state.tests = state.tests.filter(x=>x.id!==t.id); save(); renderTests(); };
+    w.appendChild(card);
+  });
+  // add button
+  const add=document.createElement('button'); add.className='btn'; add.textContent='+ Add test'; add.style.alignSelf='flex-start';
+  add.onclick=()=>{ state.tests.push({ id:'t'+Date.now(), name:'Test '+(state.tests.length+1), stdin:'', expected:''}); save(); renderTests(); };
+  w.appendChild(add);
+}
+
+// auto-detect java (banner removed, version kept internally)
+async function detectJava(){
+  const out=document.getElementById('output');
+  try{
+    const r=await fetch('/api/java-version'); if(r.ok){ const j=await r.json(); javaVersion=j.version;
+      out.innerHTML=`<span class="dim">▶ Ready — Run or Run Tests.</span>`;
+      document.getElementById('status').textContent='Ready'; return;
+    }
+  }catch(e){}
+  try{ const r=await fetch('https://emkc.org/api/v2/piston/runtimes'); if(r.ok){ const js=await r.json(); const j=js.find(x=>x.language==='java'); if(j){ javaVersion=j.version; return; } } }catch(e){}
+  javaVersion='25.0.1';
+}
+detectJava();
+
+// Monaco
+require.config({paths:{vs:'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs'}});
+require(['vs/editor/editor.main'], function(monaco){
+  monacoInstance=monaco;
+  monaco.editor.defineTheme('utkarshPinkDark', {
+    base:'vs-dark', inherit:true,
+    rules:[{token:'comment', foreground:'7a6b7a'}],
+    colors:{
+      'editor.background':'#0f0a12','editor.foreground':'#f1e6ee','editorLineNumber.foreground':'#5a3d52',
+      'editorLineNumber.activeForeground':'#fb7185','editorGutter.background':'#0f0a12','editor.lineHighlightBackground':'#1a1220',
+      'editor.selectionBackground':'#3a1c2f','editorCursor.foreground':'#fb7185',
+      'editorIndentGuide.background':'#2e1a2b','editorIndentGuide.activeBackground':'#4a2342'
+    }
+  });
+  const theme = state.theme==='light' ? 'vs' : 'utkarshPinkDark';
+  editor = monaco.editor.create(document.getElementById('editor'), {
+    value: state.files[state.active]||DEFAULT_MAIN, language:'java', theme, fontFamily:'JetBrains Mono', fontSize: state.fontSize, lineHeight:20, minimap:{enabled:false}, scrollBeyondLastLine:false, automaticLayout:true, tabSize:4, wordWrap:'on', padding:{top:14}
+  });
+  // robust auto-comment: both paste prevention + post-insert fix
+  function handlePaste(e){
+    if(!editor.hasTextFocus()) return;
+    const text=(e.clipboardData||window.clipboardData).getData('text');
+    if(!text || !isProblemPaste(text)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const commented=toCommented(text) + "\n";
+    const sel=editor.getSelection();
+    isAutoCommenting=true;
+    editor.executeEdits('auto-comment', [{ range: sel, text: commented, forceMoveMarkers:true }]);
+    const s=document.getElementById('status'); s.textContent='Auto-commented question'; s.className='status ok'; setTimeout(()=>{s.textContent='Ready'; s.className='status';},1600);
+    setTimeout(()=> isAutoCommenting=false, 100);
+  }
+  // capture phase to beat Monaco
+  const domNode = editor.getDomNode();
+  if(domNode) domNode.addEventListener('paste', handlePaste, true);
+  document.addEventListener('paste', handlePaste, true);
+  // fallback: if paste slipped through, convert after insert
+  editor.onDidChangeModelContent((ev)=>{
+    if(isAutoCommenting) return;
+    if(!ev.changes || !ev.changes.length) return;
+    for(const ch of ev.changes){
+      const txt=ch.text;
+      if(txt && isProblemPaste(txt)){
+        isAutoCommenting=true;
+        const commented=toCommented(txt);
+        setTimeout(()=>{
+          editor.executeEdits('auto-comment-fix', [{ range: ch.range, text: commented, forceMoveMarkers:true }]);
+          isAutoCommenting=false;
+          const s=document.getElementById('status'); s.textContent='Auto-commented question'; s.className='status ok'; setTimeout(()=>{s.textContent='Ready'; s.className='status';},1600);
+        }, 10);
+        break;
+      }
+    }
+  });
+  editor.onDidChangeModelContent(()=>{
+    if(isAutoCommenting) return;
+    state.files[state.active]=editor.getValue(); save();
+  });
+  document.getElementById('stdin').value=state.stdin||'';
+  renderTests();
+  editor.updateOptions({fontSize: state.fontSize});
+});
+
+function save(){
+  state.stdin=document.getElementById('stdin').value;
+  state.fontSize=fontSize;
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  // also update url hash for share if needed? keep manual
+}
+document.getElementById('stdin').addEventListener('input', save);
+
+// load share from hash on boot
+(() => {
+  try{
+    const h=location.hash.match(/share=([^&]+)/);
+    if(h){ const j=JSON.parse(decodeURIComponent(escape(atob(h[1])))); if(j.files){ state=j; localStorage.setItem(LS_KEY, JSON.stringify(state)); } }
+  }catch(e){}
+})();
+
+// Ctabs
+document.querySelectorAll('.ctab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.ctab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    const isTests=t.dataset.ctab==='tests';
+    document.getElementById('consoleBody').classList.toggle('tests-mode', isTests);
+    document.querySelector('.console .io')?.classList.toggle('tests-hidden', isTests);
+    if(isTests) renderTests();
+  });
+});
+
+// Format, Copy, Reset, Clear, Export, Share
+document.getElementById('formatBtn').onclick=()=>{ if(editor) editor.getAction('editor.action.formatDocument').run(); };
+document.getElementById('copyBtn').onclick=()=>{
+  navigator.clipboard.writeText(editor.getValue());
+  const s=document.getElementById('status'); s.textContent='Copied!'; s.className='status ok'; setTimeout(()=>{s.textContent='Ready'; s.className='status'},1200);
+};
+document.getElementById('resetBtn').onclick=()=>{
+  if(!confirm('Reset to defaults?')) return;
+  state.files={'Main.java':DEFAULT_MAIN,'Solution.java':DEFAULT_SOLUTION}; state.active='Main.java'; state.tests=JSON.parse(JSON.stringify(DEFAULT_TESTS)); save(); location.reload();
+};
+document.getElementById('clearBtn').onclick=()=>{ document.getElementById('output').innerHTML=''; state.tests.forEach(t=>{t.actual=''; t.status='idle'}); renderTests(); save(); };
+document.getElementById('shareBtn').onclick=()=>{
+  save();
+  const payload=btoa(unescape(encodeURIComponent(JSON.stringify(state))));
+  const url=location.origin+location.pathname+'#share='+payload;
+  navigator.clipboard.writeText(url).then(()=> alert('Share link copied!\n'+url.slice(0,120)+'...'));
+  location.hash='share='+payload;
+};
+document.getElementById('exportBtn').onclick=()=>{
+  save();
+  let md='# Java Interview IDE — export\n\n';
+  md+='> '+ new Date().toISOString()+'\n\n';
+  Object.entries(state.files).forEach(([n,c])=>{ md+=`## ${n}\n\`\`\`java\n${c}\n\`\`\`\n\n`; });
+  md+=`## STDIN\n\`\`\`\n${state.stdin}\n\`\`\`\n\n## OUTPUT\n\`\`\`\n${document.getElementById('output').innerText.slice(0,3000)}\n\`\`\`\n`;
+  md+='\n## Tests\n'; state.tests.forEach(t=>{ md+=`- ${t.name}: stdin=\`${t.stdin}\` expected=\`${t.expected}\` actual=\`${t.actual||''}\` ${t.status||''}\n`; });
+  const blob=new Blob([md], {type:'text/markdown'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='java-ide-export.md'; a.click();
+};
+
+// Drag resize
+(() => {
+  const handle=document.getElementById('dragHandle'), consoleEl=document.getElementById('console');
+  let dragging=false;
+  handle.addEventListener('mousedown', e=>{ dragging=true; document.body.style.cursor='row-resize'; e.preventDefault(); });
+  window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    const rect=document.getElementById('work').getBoundingClientRect();
+    const newH = rect.bottom - e.clientY;
+    const clamped=Math.max(140, Math.min(500, newH));
+    consoleEl.style.height=clamped+'px';
+  });
+  window.addEventListener('mouseup', ()=>{ dragging=false; document.body.style.cursor=''; });
+})();
+
+// Palette
+const palette=document.getElementById('palette'), palInput=document.getElementById('palInput'), palList=document.getElementById('palList');
+const commands=[
+  {id:'run', label:'Run code', kbd:'⌘↩', run:()=>run()},
+  {id:'runTests', label:'Run all tests', kbd:'', run:()=>runAllTests()},
+  {id:'format', label:'Format document', kbd:'⇧⌥F', run:()=>editor.getAction('editor.action.formatDocument').run()},
+  {id:'theme', label:'Toggle light/dark', kbd:'', run:()=>document.getElementById('themeBtn').click()},
+  {id:'fontUp', label:'Increase font', kbd:'', run:()=>document.getElementById('fontUp').click()},
+  {id:'fontDown', label:'Decrease font', kbd:'', run:()=>document.getElementById('fontDown').click()},
+  {id:'share', label:'Copy share link', kbd:'', run:()=>document.getElementById('shareBtn').click()},
+  {id:'export', label:'Export markdown', kbd:'', run:()=>document.getElementById('exportBtn').click()},
+  {id:'clear', label:'Clear output', kbd:'', run:()=>document.getElementById('clearBtn').click()},
+];
+function openPalette(){ palette.classList.add('open'); palInput.value=''; renderPal(''); palInput.focus(); }
+function closePalette(){ palette.classList.remove('open'); }
+function renderPal(q){
+  const f=commands.filter(c=> c.label.toLowerCase().includes(q.toLowerCase()));
+  palList.innerHTML=f.map(c=>`<div class="pal-item" data-id="${c.id}"><span>${c.label}</span><kbd>${c.kbd}</kbd></div>`).join('') || '<div class="pal-item">No match</div>';
+  palList.querySelectorAll('.pal-item').forEach(el=> el.onclick=()=>{ const cmd=commands.find(x=>x.id===el.dataset.id); if(cmd){ closePalette(); cmd.run(); } });
+}
+palette.addEventListener('click', e=>{ if(e.target===palette) closePalette(); });
+palInput.addEventListener('input', ()=> renderPal(palInput.value));
+palInput.addEventListener('keydown', e=>{
+  if(e.key==='Enter'){ const first=palList.querySelector('.pal-item[data-id]'); if(first) first.click(); }
+  if(e.key==='Escape') closePalette();
+});
+document.getElementById('paletteBtn').onclick=openPalette;
+window.addEventListener('keydown', e=>{ if((e.metaKey||e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); openPalette(); } if(e.key==='Escape') closePalette(); });
+
+// Run
+const runBtn=document.getElementById('runBtn'), output=document.getElementById('output'), runMeta=document.getElementById('runMeta'), exitCode=document.getElementById('exitCode'), statusEl=document.getElementById('status');
+async function run(){
+  if(!editor) return; save();
+  if(!javaVersion){ output.innerHTML='<span class="err">Detecting Java…</span>'; setTimeout(run,400); return; }
+  runBtn.disabled=true; runBtn.textContent='⏳ Running...'; statusEl.textContent='Compiling…'; statusEl.className='status';
+  output.innerHTML=`<span class="dim">Compiling…</span>`; runMeta.textContent=''; exitCode.textContent='';
+  const start=performance.now();
+  try{
+    const files=Object.entries(state.files).map(([name,content])=>({name,content}));
+    const body={ language:'java', version:javaVersion, files, stdin: document.getElementById('stdin').value, run_timeout:5000 };
+    let res=null;
+    try{ res=await fetch('/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}); if(!res.ok) throw new Error('local '+res.status); }catch(err){ res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)}); }
+    if(!res.ok) throw new Error('Compile service '+res.status);
+    const data=await res.json();
+    const elapsed=((performance.now()-start)/1000).toFixed(2);
+    const compileOut=(data.compile&& (data.compile.output||data.compile.stderr))||'';
+    const runOut=data.run? (data.run.output||data.run.stdout||data.run.stderr||''):'';
+    const full=(compileOut+runOut).trim();
+    const code=data.run? data.run.code:0;
+    if(data.compile && data.compile.code!==0){
+      output.innerHTML=`<span class="err">Compilation failed (exit ${data.compile.code})</span>\n`+escapeHtml(compileOut);
+      statusEl.textContent='Compile error'; statusEl.className='status err'; exitCode.textContent='exit '+data.compile.code; exitCode.className='status err';
+    } else if(code!==0){
+      output.innerHTML=`<span class="err">Runtime error (exit ${code})</span>\n`+escapeHtml(full||'(no output)');
+      statusEl.textContent='Runtime error'; statusEl.className='status err'; exitCode.textContent='exit '+code;
+    } else {
+      output.innerHTML=`<span class="ok">✓ Executed in ${elapsed}s</span>\n`+escapeHtml(full||'(no output)');
+      statusEl.textContent='✓ Success • '+elapsed+'s'; statusEl.className='status ok'; exitCode.textContent='exit 0'; exitCode.className='status ok';
+    }
+    runMeta.textContent=elapsed+'s';
+  }catch(e){
+    output.innerHTML=`<span class="err">Failed to run:</span> ${escapeHtml(e.message)}`;
+    statusEl.textContent='Error'; statusEl.className='status err';
+  }finally{ runBtn.disabled=false; runBtn.textContent='▶ Run (⌘↩)'; }
+}
+async function runOneTest(t){
+  if(!javaVersion) return;
+  t.status='idle'; t.actual=''; renderTests();
+  const files=Object.entries(state.files).map(([name,content])=>({name,content}));
+  const body={ language:'java', version:javaVersion, files, stdin: t.stdin||'', run_timeout:5000 };
+  try{
+    let res=await fetch('/api/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    if(!res.ok) res=await fetch('https://emkc.org/api/v2/piston/execute',{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const data=await res.json();
+    const out = ((data.compile && data.compile.code!==0 ? data.compile.output : '') + (data.run? data.run.output:'')) .trim();
+    // if single file override for test, handle t.content
+    t.actual = out.split('\n').pop()||out;
+    const norm = s=> s.trim().replace(/\s+/g,' ');
+    t.status = norm(t.actual)===norm(t.expected||'') ? 'pass':'fail';
+  }catch(e){ t.actual=e.message; t.status='fail'; }
+  save(); renderTests();
+}
+async function runAllTests(){
+  document.querySelector('[data-ctab="tests"]').click();
+  for(const t of state.tests) await runOneTest(t);
+}
+document.getElementById('runTestsBtn').onclick=runAllTests;
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+document.getElementById('runBtn').onclick=run;
+window.addEventListener('keydown', e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){ e.preventDefault(); run(); }});
+</script>
+</body>
+</html>
