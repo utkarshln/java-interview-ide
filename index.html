@@ -13,6 +13,9 @@
 <meta name="author" content="Utkarsh Kumar"/>
 <meta name="robots" content="index, follow, max-image-preview:large"/>
 <link rel="canonical" href="https://utkarshln.github.io/java-interview-ide/"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#e11d48"/>
+<link rel="apple-touch-icon" href="og.png"/>
 <!-- Open Graph -->
 <meta property="og:title" content="Java Interview IDE — Free Online Java Compiler for Interviews"/>
 <meta property="og:description" content="Run Java 8/17/21 instantly. Monaco, auto-import, tests, share. Practice Two Sum & more — no setup."/>
@@ -621,6 +624,8 @@ const rtBtn=document.getElementById('runTestsBtn'); if(rtBtn) rtBtn.onclick=runA
 function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 document.getElementById('runBtn').onclick=run;
 window.addEventListener('keydown', e=>{ if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){ e.preventDefault(); run(); }});
+// PWA — less manual Android install
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('service-worker.js'); }
 </script>
 </body>
 </html>

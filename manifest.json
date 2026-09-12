@@ -1,0 +1,25 @@
+{
+  "name": "Java Interview IDE",
+  "short_name": "Java IDE",
+  "description": "Free online Java compiler for interviews — run Java 8/17/21 instantly",
+  "start_url": "/java-interview-ide/",
+  "scope": "/java-interview-ide/",
+  "display": "standalone",
+  "background_color": "#0f0a12",
+  "theme_color": "#e11d48",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "og.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "og.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
