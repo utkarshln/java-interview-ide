@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://utkarshln.github.io/java-interview-ide/</loc>
-    <lastmod>2026-09-12</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/two-sum-java.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/longest-substring-java.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/product-of-array-except-self-java.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/online-java-compiler-interview.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/run-java-online.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/java-8-compiler-online.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/java-17-compiler-online.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/java-hashmap-interview.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/java-arrays-interview.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/posts/java-scanner-online.html</loc><lastmod>2026-09-12</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://utkarshln.github.io/java-interview-ide/seo-keywords.txt</loc><lastmod>2026-09-12</lastmod><changefreq>monthly</changefreq><priority>0.3</priority></url>
 </urlset>
